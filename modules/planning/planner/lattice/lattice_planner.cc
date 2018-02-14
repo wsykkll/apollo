@@ -139,7 +139,7 @@ Status LatticePlanner::PlanOnReferenceLine(
   double start_time = Clock::NowInSeconds();
   double current_time = start_time;
 
-  ADEBUG << "Number of planning cycles: " << num_planning_cycles << " "
+  AINFO << "Number of planning cycles: " << num_planning_cycles << " "
          << num_planning_succeeded_cycles;
   ++num_planning_cycles;
 
@@ -290,15 +290,21 @@ Status LatticePlanner::PlanOnReferenceLine(
 
       apollo::planning_internal::AutoTuningTrainingData auto_tuning_data;
 
-      for (double student_cost_component : trajectory_pair_cost_components) {
-        auto_tuning_data.mutable_student_component()
-          ->add_cost_component(student_cost_component);
-      }
-
+      AINFO << "TAGGING STUDENT COST";
+      std::string teacher_cost_str;
       for (double teacher_cost_component : future_traj_component_cost) {
         auto_tuning_data.mutable_teacher_component()
           ->add_cost_component(teacher_cost_component);
+        teacher_cost_str += std::to_string(teacher_cost_component) + ",";
       }
+      std::string student_cost_str;
+      for (double student_cost_component : trajectory_pair_cost_components) {
+        auto_tuning_data.mutable_student_component()
+          ->add_cost_component(student_cost_component);
+        student_cost_str += std::to_string(student_cost_component) + ",";
+      }
+      AINFO << teacher_cost_str;
+      AINFO << student_cost_str;
 
       ptr_debug->mutable_auto_tuning_training_data()
         ->CopyFrom(auto_tuning_data);
@@ -418,14 +424,18 @@ bool LatticePlanner::MapFutureTrajectoryToSL(
     ComputeInitFrenetState(matched_point, trajectory_point, &pose_s, &pose_d);
     apollo::common::SpeedPoint st_point;
     apollo::common::FrenetFramePoint sl_point;
+
+    // st_point
     st_point.set_s(pose_s[0]);
     st_point.set_t(trajectory_point.relative_time());
+    ADEBUG << "setting t=" << trajectory_point.relative_time();
     st_point.set_v(pose_s[1]);
     st_point.set_a(pose_s[2]);  // Not setting da
-    sl_point.set_s(pose_s[0]);
+
+    // sl_point
     sl_point.set_l(pose_d[0]);
-    sl_point.set_dl(pose_d[0]);
-    sl_point.set_ddl(pose_d[0]);
+    sl_point.set_dl(pose_d[1]);
+    sl_point.set_ddl(pose_d[2]);
     st_points->emplace_back(std::move(st_point));
     sl_points->emplace_back(std::move(sl_point));
   }

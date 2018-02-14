@@ -222,8 +222,11 @@ double TrajectoryEvaluator::LonComfortCost(
     double dds1 = st_points[i].a();
     double dds2 = st_points[i+1].a();
     double t1 = st_points[i].t();
-    double t2 = st_points[i].t();
+    double t2 = st_points[i+1].t();
     if (std::abs(t1 - t2) <= FLAGS_lattice_epsilon) {
+      AINFO << "AutoTuning LonComfortCost continued here!"
+        << "t1="<<t1 << " t2=" <<t2
+        << "dds1="<<dds1 << " dds2="<<dds2;
       continue;
     }
     double jerk =  (dds2 - dds1) / (t2 - t1);
@@ -335,7 +338,8 @@ double TrajectoryEvaluator::LonCollisionCost(
     double traj_s = std::numeric_limits<double>::infinity();
     if (!InterpolateDenseStPoints(st_points, t, &traj_s)) {
       AERROR << "AutoTuning LonCollisionCost InterpolateDenseStPoints Error";
-      return traj_s;
+      continue;
+      //return traj_s;
     }
     double sigma = FLAGS_lon_collision_cost_std;
     for (const auto& m : pt_interval) {
@@ -361,8 +365,12 @@ bool TrajectoryEvaluator::InterpolateDenseStPoints(
   const std::vector<apollo::common::SpeedPoint> st_points,
   double t, double *traj_s) const {
   CHECK_GT(st_points.size(), 1);
-  if (t < st_points[0].t() || t > st_points[st_points.size()-1].t()) {
-    AERROR << "AutoTuning InterpolateDenseStPoints Error";
+  //if (t < st_points[0].t() || t > st_points[st_points.size()-2].t()) {
+  if (t < st_points[0].t()) {
+    AERROR << "AutoTuning InterpolateDenseStPoints Error t=" << t
+      <<" st_points[0].t=" << st_points[0].t()
+      << "st_points.size()" << st_points.size()
+      <<" st_points_last.t=" << st_points[st_points.size()-1].t();
     return false;
   }
   for (uint i = 1; i < st_points.size(); ++i) {
