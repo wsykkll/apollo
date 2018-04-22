@@ -18,8 +18,8 @@
 #include <algorithm>
 
 #include "modules/common/adapters/adapter_manager.h"
+#include "modules/common/time/timer.h"
 #include "modules/perception/common/perception_gflags.h"
-#include "modules/perception/lib/base/timer.h"
 #include "modules/perception/onboard/subnode_helper.h"
 #include "modules/perception/traffic_light/base/tl_shared_data.h"
 #include "modules/perception/traffic_light/base/utils.h"
@@ -41,6 +41,7 @@ namespace traffic_light {
 
 using apollo::common::ErrorCode;
 using apollo::common::Status;
+using apollo::common::time::Timer;
 using apollo::common::adapter::AdapterManager;
 
 namespace {
@@ -168,10 +169,10 @@ bool TLProcSubnode::InitInternal() {
   }
 
   // init image_border
-  ConfigManager *config_manager = ConfigManager::instance();
   std::string model_name("TLProcSubnode");
-  const ModelConfig *model_config(nullptr);
-  if (!config_manager->GetModelConfig(model_name, &model_config)) {
+  ConfigManager *config_manager = ConfigManager::instance();
+  const ModelConfig *model_config = config_manager->GetModelConfig(model_name);
+  if (model_config == nullptr) {
     AERROR << "TLProcSubnode not found model: " << model_name;
     return false;
   }

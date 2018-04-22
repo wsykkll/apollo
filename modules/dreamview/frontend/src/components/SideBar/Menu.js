@@ -36,9 +36,11 @@ const MenuIdOptionMapping = {
         perceptionUnknownUnmovable: 'showObstaclesUnknownUnmovable',
         perceptionUnknown: 'showObstaclesUnknown',
         perceptionVirtual: 'showObstaclesVirtual',
+        perceptionCipv: 'showObstaclesCipv',
         perceptionVelocity: 'showObstaclesVelocity',
         perceptionHeading: 'showObstaclesHeading',
         perceptionId: 'showObstaclesId',
+        perceptionLaneMarker: 'showPerceptionLaneMarker',
         predictionMajor: 'showPredictionMajor',
         predictionMinor: 'showPredictionMinor',
         routing: 'showRouting',
@@ -141,10 +143,15 @@ export default class Menu extends React.Component {
         const subMenu = Object.keys(menuData)
             .map(key => {
                 const item = menuData[key];
-                return (
-                    <SubMenu key={item.id} tabId={item.id} tabTitle={item.title}
-                    tabType={item.type} data={item.data} options={options} />
-                );
+
+                if (OFFLINE_PLAYBACK && !item.supportInOfflineView) {
+                    return null;
+                } else {
+                    return (
+                        <SubMenu key={item.id} tabId={item.id} tabTitle={item.title}
+                                 tabType={item.type} data={item.data} options={options} />
+                    );
+                }
             });
 
         return (

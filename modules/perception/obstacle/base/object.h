@@ -40,7 +40,7 @@ struct alignas(16) Object {
   // deep copy
   void clone(const Object& rhs);
   std::string ToString() const;
-
+  void AddFourCorners(PerceptionObstacle* pb_obj) const;
   void Serialize(PerceptionObstacle* pb_obj) const;
   void Deserialize(const PerceptionObstacle& pb_obs);
 
@@ -93,7 +93,7 @@ struct alignas(16) Object {
   Eigen::Matrix3d velocity_uncertainty;
 
   // modeling uncertainty from sensor level tracker
-  Eigen::Matrix<double, 4, 4> uncertainty;
+  Eigen::Matrix4d state_uncertainty = Eigen::Matrix4d::Identity();
 
   // CIPV
   bool b_cipv = false;
@@ -101,9 +101,6 @@ struct alignas(16) Object {
   RadarSupplementPtr radar_supplement = nullptr;
   CameraSupplementPtr camera_supplement = nullptr;
 };
-
-typedef std::shared_ptr<Object> ObjectPtr;
-typedef std::shared_ptr<const Object> ObjectConstPtr;
 
 // Sensor single frame objects.
 struct SensorObjects {
@@ -118,7 +115,7 @@ struct SensorObjects {
   std::string sensor_id;
   double timestamp = 0.0;
   SeqId seq_num = 0;
-  std::vector<ObjectPtr> objects;
+  std::vector<std::shared_ptr<Object>> objects;
   Eigen::Matrix4d sensor2world_pose;
   LaneObjectsPtr lane_objects;
 

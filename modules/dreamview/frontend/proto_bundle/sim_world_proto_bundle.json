@@ -94,6 +94,10 @@
                 "stopReason": {
                   "type": "StopReasonCode",
                   "id": 11
+                },
+                "changeLaneType": {
+                  "type": "apollo.routing.ChangeLaneType",
+                  "id": 12
                 }
               },
               "nested": {
@@ -288,7 +292,8 @@
                     "PEDESTRIAN": 3,
                     "BICYCLE": 4,
                     "VEHICLE": 5,
-                    "VIRTUAL": 6
+                    "VIRTUAL": 6,
+                    "CIPV": 7
                   }
                 }
               }
@@ -400,6 +405,14 @@
                 "stationError": {
                   "type": "double",
                   "id": 2
+                },
+                "lateralError": {
+                  "type": "double",
+                  "id": 3
+                },
+                "headingError": {
+                  "type": "double",
+                  "id": 4
                 }
               }
             },
@@ -442,7 +455,14 @@
                 },
                 "mainStop": {
                   "type": "Object",
-                  "id": 9
+                  "id": 9,
+                  "options": {
+                    "deprecated": true
+                  }
+                },
+                "mainDecision": {
+                  "type": "Object",
+                  "id": 24
                 },
                 "speedLimit": {
                   "type": "double",
@@ -721,6 +741,15 @@
                   "options": {
                     "default": null
                   }
+                }
+              }
+            },
+            "Polygon": {
+              "fields": {
+                "point": {
+                  "rule": "repeated",
+                  "type": "Point3D",
+                  "id": 1
                 }
               }
             },
@@ -2299,6 +2328,10 @@
                 "relativeMap": {
                   "type": "apollo.relative_map.MapMsg",
                   "id": 22
+                },
+                "autoTuningTrainingData": {
+                  "type": "AutoTuningTrainingData",
+                  "id": 23
                 }
               }
             },
@@ -2356,6 +2389,30 @@
                 "tResolution": {
                   "type": "double",
                   "id": 7
+                }
+              }
+            },
+            "CostComponents": {
+              "fields": {
+                "costComponent": {
+                  "rule": "repeated",
+                  "type": "double",
+                  "id": 1,
+                  "options": {
+                    "packed": false
+                  }
+                }
+              }
+            },
+            "AutoTuningTrainingData": {
+              "fields": {
+                "teacherComponent": {
+                  "type": "CostComponents",
+                  "id": 1
+                },
+                "studentComponent": {
+                  "type": "CostComponents",
+                  "id": 2
                 }
               }
             },
@@ -2665,6 +2722,14 @@
                 "viewRange": {
                   "type": "double",
                   "id": 8
+                },
+                "longitudeStart": {
+                  "type": "double",
+                  "id": 9
+                },
+                "longitudeEnd": {
+                  "type": "double",
+                  "id": 10
                 }
               }
             },

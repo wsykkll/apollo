@@ -41,7 +41,7 @@ DEFINE_bool(enable_timing_remove_stale_data, true,
             "whether timing clean shared data");
 
 SubnodeMap DAGStreaming::subnode_map_;
-std::unordered_map<std::string, SubnodeID> DAGStreaming::subnode_name_map_;
+std::map<std::string, SubnodeID> DAGStreaming::subnode_name_map_;
 
 DAGStreaming::DAGStreaming()
     : Thread(true, "DAGStreamingThread"),
@@ -128,8 +128,8 @@ bool DAGStreaming::InitSubnodes(const DAGConfig& dag_config) {
   map<SubnodeID, vector<EventID>> subnode_pub_events_map;
 
   for (auto& subnode_proto : subnode_config.subnodes()) {
-    std::pair<map<SubnodeID, DAGConfig::Subnode>::iterator, bool> result =
-        subnode_config_map.insert(
+    std::pair<map<SubnodeID, DAGConfig::Subnode>::iterator, bool>
+        result = subnode_config_map.insert(
             std::make_pair(subnode_proto.id(), subnode_proto));
     if (!result.second) {
       AERROR << "duplicate SubnodeID: " << subnode_proto.id();
@@ -160,6 +160,8 @@ bool DAGStreaming::InitSubnodes(const DAGConfig& dag_config) {
     const SubnodeID subnode_id = pair.first;
     Subnode* inst = SubnodeRegisterer::GetInstanceByName(subnode_config.name());
 
+//    AINFO << "subnode_name: " << subnode_config.name();
+//    AINFO << "subnode_id: " << subnode_id;
     if (inst == NULL) {
       AERROR << "failed to get subnode instance. name: "
              << subnode_config.name();
@@ -229,7 +231,7 @@ void DAGStreamingMonitor::Run() {
 }
 
 Subnode* DAGStreaming::GetSubnodeByName(std::string name) {
-  std::unordered_map<std::string, SubnodeID>::iterator iter =
+  std::map<std::string, SubnodeID>::iterator iter =
       subnode_name_map_.find(name);
   if (iter != subnode_name_map_.end()) {
     return subnode_map_[iter->second].get();

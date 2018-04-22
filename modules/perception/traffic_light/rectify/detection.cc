@@ -18,12 +18,14 @@
 #include <algorithm>
 
 #include "modules/common/log.h"
-#include "modules/perception/lib/base/timer.h"
+#include "modules/common/time/timer.h"
 #include "modules/perception/traffic_light/base/utils.h"
 
 namespace apollo {
 namespace perception {
 namespace traffic_light {
+
+using apollo::common::time::Timer;
 
 void Detection::Perform(const cv::Mat &ros_image,
                         std::vector<LightPtr> *lights) {
@@ -33,12 +35,10 @@ void Detection::Perform(const cv::Mat &ros_image,
   lights->clear();
   // resize
   cv::Mat fw_image;
-  float crop_col_shrink_ = 0.0f;
-  float crop_row_shrink_ = 0.0f;
   float col_shrink = static_cast<float>(resize_len_) / (crop_image.cols);
   float row_shrink = static_cast<float>(resize_len_) / (crop_image.rows);
-  crop_col_shrink_ = std::max(col_shrink, row_shrink);
-  crop_row_shrink_ = crop_col_shrink_;
+  float crop_col_shrink_ = std::max(col_shrink, row_shrink);
+  float crop_row_shrink_ = crop_col_shrink_;
   cv::resize(crop_image, fw_image,
              cv::Size(crop_image.cols * crop_col_shrink_,
                       crop_image.rows * crop_row_shrink_));

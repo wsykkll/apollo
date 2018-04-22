@@ -92,6 +92,7 @@ void SimulationWorldUpdater::RegisterMessageHandlers() {
   websocket_->RegisterMessageHandler(
       "Binary",
       [this](const std::string &data, WebSocketHandler::Connection *conn) {
+        // Navigation info in binary format
         apollo::relative_map::NavigationInfo navigation_info;
         if (navigation_info.ParseFromString(data)) {
           AdapterManager::FillNavigationHeader(FLAGS_dreamview_module_name,
@@ -146,10 +147,10 @@ void SimulationWorldUpdater::RegisterMessageHandlers() {
         // Publish monitor message.
         if (succeed) {
           sim_world_service_.PublishMonitorMessage(MonitorMessageItem::INFO,
-                                                   "Routing request Sent");
+                                                   "Routing request sent.");
         } else {
           sim_world_service_.PublishMonitorMessage(
-              MonitorMessageItem::ERROR, "Failed to send routing request");
+              MonitorMessageItem::ERROR, "Failed to send a routing request.");
         }
       });
 

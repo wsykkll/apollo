@@ -16,6 +16,19 @@ cc_library(
     ],
 )
 
+cc_test(
+    name = "discretized_path_test",
+    size = "small",
+    srcs = [
+        "discretized_path_test.cc",
+    ],
+    deps = [
+        ":discretized_path",
+        "//modules/common/util",
+        "@gtest//:main",
+    ],
+)
+
 cc_library(
     name = "frenet_frame_path",
     srcs = [
@@ -28,6 +41,18 @@ cc_library(
         "//modules/common/math:linear_interpolation",
         "//modules/common/proto:pnc_point_proto",
         "//modules/planning/common:planning_util",
+    ],
+)
+
+cc_test(
+    name = "frenet_frame_path_test",
+    size = "small",
+    srcs = [
+        "frenet_frame_path_test.cc",
+    ],
+    deps = [
+        ":frenet_frame_path",
+        "@gtest//:main",
     ],
 )
 
